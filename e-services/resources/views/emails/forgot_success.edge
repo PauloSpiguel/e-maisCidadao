@@ -1,0 +1,19 @@
+<strong>Recuperação de senha</strong><br/><br/>
+<strong>Olá, {{ username }}. ;)</strong>
+
+<p> Sua recuperação de senha para ({{ email }}), foi realizada com sucesso.</p>
+
+<p>Confira os dados abaixo:</p>
+<p>E-mail: {{ email }}</p>
+<p>Nova Senha: {{ password }}</p>
+<p>Data Solicitação: {{ dateNow }}</p>
+<p>IP do solicitante: {{ clientIp }}</p>
+
+<p>Caso não reconheça esta ação, altere sua senha pelo link abaixo:</p>
+<a href={{ link }}>Crie uma nova senha</a><br/>
+
+<div>
+<strong>Departamento de Informática</strong><br/>
+<strong>Governo Municipal de Centenário do Sul</strong><br/>
+<img src="http://www.centenariodosul.pr.gov.br/public/site/images/logo/logo.png" width="30%" height="20%" />
+</div>
