@@ -20,7 +20,6 @@ class PersonaSchema extends Schema {
         .unique()
       table.string('cellphone').notNullable()
       table.string('email').unique()
-      table.string('address').notNullable()
       table.timestamps()
     })
   }

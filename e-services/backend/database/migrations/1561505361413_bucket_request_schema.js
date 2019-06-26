@@ -30,13 +30,13 @@ class BucketRequestSchema extends Schema {
         .onUpdate('CASCADE')
         .onDelete('SET NULL')
       table
-        .string('protocol')
-        .notNullable()
-        .unique()
-      table
         .integer('priority')
         .notNullable()
         .defaultTo('0')
+      table
+        .string('protocol')
+        .notNullable()
+        .unique()
       table.timestamp('due_date')
       table.timestamp('updatedAt')
       table.timestamps()
