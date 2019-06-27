@@ -38,6 +38,10 @@ class BucketRequestSchema extends Schema {
         .notNullable()
         .unique()
       table.timestamp('due_date')
+      table
+        .integer('done_request')
+        .notNullable()
+        .defaultTo('0')
       table.timestamps()
     })
   }

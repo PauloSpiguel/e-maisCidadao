@@ -41,9 +41,9 @@ class BucketRequestController {
       })
     }
 
-    const dueDate = moment()
-      .add(data.due_date, 'days')
-      .format('YYYY-MM-DD HH:mm:ss')
+    // const dueDate = moment()
+    //   .add(data.due_date, 'days')
+    //   .format('YYYY-MM-DD HH:mm:ss')
 
     const bucket = await Bucket.findByOrFail(
       'number_bucket',
@@ -56,7 +56,7 @@ class BucketRequestController {
       address: data.address,
       trash_type: data.trash_type,
       bucket_id: bucket.id,
-      due_date: dueDate,
+      due_date: this.dueData(data.due_date),
       priority: data.priority,
       protocol: this.protocolGenerate()
     })
@@ -64,9 +64,40 @@ class BucketRequestController {
     return bucketRequest
   }
 
-  async show({ params, request, response, view }) {}
+  async show({ params }) {
+    const bucketRequest = await BucketRequest.findOrFail(params.id)
 
-  async update({ params, request, response }) {}
+    await bucketRequest.load('user')
+    await bucketRequest.load('persona')
+
+    return bucketRequest
+  }
+
+  async update({ params, request, auth }) {
+    const bucketRequest = await BucketRequest.findOrFail(params.id)
+    const data = request.only([
+      'address',
+      'trash_type',
+      'number_bucket',
+      'due_date',
+      'done_request'
+    ])
+
+    const bucket = await Bucket.findBy('number_bucket', data.number_bucket)
+
+    bucketRequest.merge({
+      address: data.address,
+      trash_type: data.trash_type,
+      bucket_id: bucket.id,
+      due_date: this.dueData(data.due_date),
+      user_id: auth.user.id,
+      done_request: data.done_request
+    })
+
+    await bucketRequest.save()
+
+    return bucketRequest
+  }
 
   async destroy({ params, request, response }) {}
 
@@ -76,6 +107,14 @@ class BucketRequestController {
       .replace(/[\-\:\" "]/g, '')
 
     return dateNow
+  }
+
+  dueData(due) {
+    const dueDate = moment()
+      .add(due, 'days')
+      .format('YYYY-MM-DD HH:mm:ss')
+
+    return dueDate
   }
 }
 
