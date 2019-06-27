@@ -3,8 +3,8 @@
 const Model = use('Model')
 
 class Persona extends Model {
-  task() {
-    return this.belongsTo('App/Models/Task')
+  user() {
+    return this.belongsTo('App/Models/User')
   }
 }
 

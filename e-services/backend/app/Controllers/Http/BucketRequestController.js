@@ -7,7 +7,10 @@ const Bucket = use('App/Models/Bucket')
 
 class BucketRequestController {
   async index({ request, response }) {
-    const bucketRequests = BucketRequest.all()
+    const bucketRequests = BucketRequest.query()
+      .with('user')
+      .with('persona')
+      .fetch()
 
     return bucketRequests
   }
@@ -16,8 +19,9 @@ class BucketRequestController {
     const { id } = auth.user
     const data = request.only([
       'persona',
-      'cpf',
+      'document',
       'cellphone',
+      'email',
       'address',
       'trash_type',
       'number_bucket',
@@ -25,9 +29,26 @@ class BucketRequestController {
       'priority'
     ])
 
-    const persona = this.searchPerson(data, id)
+    let persona = await Persona.findBy('document', data.document)
 
-    const bucket = this.searchBucket(data.number_bucket)
+    if (!persona) {
+      persona = await Persona.create({
+        user_id: id,
+        name: data.persona,
+        document: data.document,
+        cellphone: data.cellphone,
+        email: data.email
+      })
+    }
+
+    const dueDate = moment()
+      .add(data.due_date, 'days')
+      .format('YYYY-MM-DD HH:mm:ss')
+
+    const bucket = await Bucket.findByOrFail(
+      'number_bucket',
+      data.number_bucket
+    )
 
     const bucketRequest = BucketRequest.create({
       user_id: id,
@@ -35,7 +56,7 @@ class BucketRequestController {
       address: data.address,
       trash_type: data.trash_type,
       bucket_id: bucket.id,
-      due_date: data.due_date,
+      due_date: dueDate,
       priority: data.priority,
       protocol: this.protocolGenerate()
     })
@@ -48,30 +69,6 @@ class BucketRequestController {
   async update({ params, request, response }) {}
 
   async destroy({ params, request, response }) {}
-
-  async searchPerson({ data, id }) {
-    const persona = await Persona.findByOrFail('cpf', data.cpf)
-
-    if (!persona) {
-      const newPersona = await Persona.create({
-        user_id: id,
-        name: data.persona,
-        document: data.cpf,
-        cellphone: data.cellphone,
-        email: data.email
-      })
-
-      return newPersona
-    }
-
-    return persona
-  }
-
-  async searchBucket({ bucket }) {
-    const bucketSearch = await Bucket.findByOrFail('number_bucket', bucket)
-
-    return bucketSearch
-  }
 
   protocolGenerate() {
     const dateNow = moment()

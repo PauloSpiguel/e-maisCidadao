@@ -38,7 +38,6 @@ class BucketRequestSchema extends Schema {
         .notNullable()
         .unique()
       table.timestamp('due_date')
-      table.timestamp('updatedAt')
       table.timestamps()
     })
   }
