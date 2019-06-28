@@ -80,7 +80,7 @@ class BucketRequestController {
       'trash_type',
       'number_bucket',
       'due_date',
-      'done_request'
+      'priority'
     ])
 
     const bucket = await Bucket.findBy('number_bucket', data.number_bucket)
@@ -90,8 +90,8 @@ class BucketRequestController {
       trash_type: data.trash_type,
       bucket_id: bucket.id,
       due_date: this.dueData(data.due_date),
-      user_id: auth.user.id,
-      done_request: data.done_request
+      priority: data.priority,
+      user_id: auth.user.id
     })
 
     await bucketRequest.save()
@@ -99,7 +99,21 @@ class BucketRequestController {
     return bucketRequest
   }
 
-  async destroy({ params, request, response }) {}
+  async destroy({ params }) {
+    const bucketRequest = await BucketRequest.findOrFail(params.id)
+
+    await bucketRequest.delete()
+  }
+
+  async doneRequest({ params, request, auth }) {
+    const bucketRequest = await BucketRequest.findOrFail(params.id)
+    const doneRequest = request.only(['done_request'])
+
+    bucketRequest.merge(doneRequest)
+    await bucketRequest.save()
+
+    return bucketRequest
+  }
 
   protocolGenerate() {
     const dateNow = moment()

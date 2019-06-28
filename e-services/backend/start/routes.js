@@ -14,5 +14,6 @@ Route.group(() => {
   Route.resource('services', 'ServiceController').apiOnly()
   Route.resource('buckets', 'BucketController').apiOnly()
   Route.resource('bucket-request', 'BucketRequestController').apiOnly()
+  Route.put('/bucket-request-done/:id', 'BucketRequestController.doneRequest')
   Route.post('/files', 'fileController.store')
 }).middleware(['auth'])
