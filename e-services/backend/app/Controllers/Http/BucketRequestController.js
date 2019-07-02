@@ -83,12 +83,13 @@ class BucketRequestController {
       'priority'
     ])
 
-    const bucket = await Bucket.findBy('number_bucket', data.number_bucket)
+    // Pesquisa a caçamba pelo seu número
+    // const bucket = this.FindBucket(data.number_bucket)
 
     bucketRequest.merge({
       address: data.address,
       trash_type: data.trash_type,
-      bucket_id: bucket.id,
+      // bucket_id: bucket.id,
       due_date: this.dueData(data.due_date),
       priority: data.priority,
       user_id: auth.user.id
@@ -107,9 +108,14 @@ class BucketRequestController {
 
   async doneRequest({ params, request, auth }) {
     const bucketRequest = await BucketRequest.findOrFail(params.id)
-    const doneRequest = request.only(['done_request'])
+    const doneRequest = request.only(['done_request', 'number_bucket'])
 
-    bucketRequest.merge(doneRequest)
+    const bucket = this.FindBucket(doneRequest.number_bucket)
+
+    bucketRequest.merge({
+      done_request: doneRequest.done_request,
+      bucket_id: bucket.id
+    })
     await bucketRequest.save()
 
     return bucketRequest
@@ -129,6 +135,12 @@ class BucketRequestController {
       .format('YYYY-MM-DD HH:mm:ss')
 
     return dueDate
+  }
+
+  async FindBucket(bucketNumber) {
+    const bucket = await Bucket.findBy('number_bucket', bucketNumber)
+
+    return bucket
   }
 }
 
