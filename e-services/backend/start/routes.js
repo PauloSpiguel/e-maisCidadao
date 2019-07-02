@@ -25,5 +25,8 @@ Route.group(() => {
     .apiOnly()
     .validator(new Map([[['bucket-request.store'], ['BucketRequest']]]))
   Route.put('/bucket-request-done/:id', 'BucketRequestController.doneRequest')
+  Route.resource('personas', 'PersonaController')
+    .apiOnly()
+    .validator(new Map([[['personas.update'], ['Persona']]]))
   Route.post('/files', 'fileController.store')
 }).middleware(['auth'])

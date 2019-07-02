@@ -78,13 +78,13 @@ class BucketRequestController {
     const data = request.only([
       'address',
       'trash_type',
-      'number_bucket',
+      // 'number_bucket',
       'due_date',
       'priority'
     ])
 
     // Pesquisa a caçamba pelo seu número
-    // const bucket = this.FindBucket(data.number_bucket)
+    // const bucket = await Bucket.findBy('number_bucket', data.number_bucket)
 
     bucketRequest.merge({
       address: data.address,
@@ -110,7 +110,10 @@ class BucketRequestController {
     const bucketRequest = await BucketRequest.findOrFail(params.id)
     const doneRequest = request.only(['done_request', 'number_bucket'])
 
-    const bucket = this.FindBucket(doneRequest.number_bucket)
+    const bucket = await Bucket.findBy(
+      'number_bucket',
+      doneRequest.number_bucket
+    )
 
     bucketRequest.merge({
       done_request: doneRequest.done_request,
@@ -135,12 +138,6 @@ class BucketRequestController {
       .format('YYYY-MM-DD HH:mm:ss')
 
     return dueDate
-  }
-
-  async FindBucket(bucketNumber) {
-    const bucket = await Bucket.findBy('number_bucket', bucketNumber)
-
-    return bucket
   }
 }
 
