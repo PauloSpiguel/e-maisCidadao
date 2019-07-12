@@ -1,5 +1,7 @@
 'use strict'
 
+const Antl = use('Antl')
+
 class Bucket {
   get validateAll() {
     return true
@@ -9,6 +11,9 @@ class Bucket {
       number_bucket: 'required|unique:buckets',
       description: 'required'
     }
+  }
+  get messages() {
+    return Antl.list('validation')
   }
 }
 

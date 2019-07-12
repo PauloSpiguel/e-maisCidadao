@@ -6,11 +6,13 @@ const Persona = use('App/Models/Persona')
 const Bucket = use('App/Models/Bucket')
 
 class BucketRequestController {
-  async index({ request, response }) {
+  async index({ request }) {
+    const { page } = request.get()
+
     const bucketRequests = BucketRequest.query()
       .with('user')
       .with('persona')
-      .fetch()
+      .paginate(page)
 
     return bucketRequests
   }
@@ -26,7 +28,8 @@ class BucketRequestController {
       'trash_type',
       'number_bucket',
       'due_date',
-      'priority'
+      'priority',
+      'observation'
     ])
 
     let persona = await Persona.findBy('document', data.document)
@@ -58,6 +61,7 @@ class BucketRequestController {
       bucket_id: bucket.id,
       due_date: this.dueData(data.due_date),
       priority: data.priority,
+      observation: data.observation,
       protocol: this.protocolGenerate()
     })
 
@@ -80,7 +84,8 @@ class BucketRequestController {
       'trash_type',
       // 'number_bucket',
       'due_date',
-      'priority'
+      'priority',
+      'observation'
     ])
 
     // Pesquisa a caçamba pelo seu número
@@ -92,6 +97,7 @@ class BucketRequestController {
       // bucket_id: bucket.id,
       due_date: this.dueData(data.due_date),
       priority: data.priority,
+      observation: data.observation,
       user_id: auth.user.id
     })
 

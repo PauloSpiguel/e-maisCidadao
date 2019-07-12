@@ -33,6 +33,7 @@ class BucketRequestSchema extends Schema {
         .integer('priority')
         .notNullable()
         .defaultTo('0')
+      table.text('observation')
       table
         .string('protocol')
         .notNullable()

@@ -1,5 +1,7 @@
 'use strict'
 
+const Antl = use('Antl')
+
 class Persona {
   get validateAll() {
     return true
@@ -10,6 +12,9 @@ class Persona {
       document: 'required',
       cellphone: 'required'
     }
+  }
+  get messages() {
+    return Antl.list('validation')
   }
 }
 
