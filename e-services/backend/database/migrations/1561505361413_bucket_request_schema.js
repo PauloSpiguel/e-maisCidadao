@@ -21,7 +21,7 @@ class BucketRequestSchema extends Schema {
         .onUpdate('CASCADE')
         .onDelete('SET NULL')
       table.string('address').notNullable()
-      table.string('trash_type').notNullable()
+      table.string('trash_type')
       table
         .integer('bucket_id')
         .unsigned()

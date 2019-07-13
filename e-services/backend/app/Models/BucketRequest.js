@@ -6,9 +6,9 @@ class BucketRequest extends Model {
   static boot() {
     super.boot()
 
-    this.addHook('beforeSave', 'BucketRequestHook.sendNewBucketRequestMail')
+    this.addHook('afterCreate', 'BucketRequestHook.sendNewBucketRequestMail')
+    this.addHook('beforeUpdate', 'BucketRequestHook.sendNewBucketRequestMail')
   }
-
   user() {
     return this.belongsTo('App/Models/User')
   }
