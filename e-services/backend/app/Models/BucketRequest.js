@@ -9,6 +9,9 @@ class BucketRequest extends Model {
     this.addHook('afterCreate', 'BucketRequestHook.sendNewBucketRequestMail')
     this.addHook('beforeUpdate', 'BucketRequestHook.sendNewBucketRequestMail')
   }
+  address() {
+    return this.hasMany('App/Models/RequestAddress')
+  }
   user() {
     return this.belongsTo('App/Models/User')
   }

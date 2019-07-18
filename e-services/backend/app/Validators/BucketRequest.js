@@ -10,8 +10,7 @@ class BucketRequest {
     return {
       persona: 'required',
       document: 'required',
-      cellphone: 'required',
-      address: 'required'
+      cellphone: 'required'
     }
   }
   get messages() {

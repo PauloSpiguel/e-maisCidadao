@@ -24,13 +24,14 @@ class BucketRequestController {
       'document',
       'cellphone',
       'email',
-      'address',
       'trash_type',
       'number_bucket',
       'due_date',
       'priority',
       'observation'
     ])
+
+    const address = request.input('address')
 
     let persona = await Persona.findBy('document', data.document)
 
@@ -56,7 +57,6 @@ class BucketRequestController {
     const bucketRequest = BucketRequest.create({
       user_id: id,
       persona_id: persona.id,
-      address: data.address,
       trash_type: data.trash_type,
       bucket_id: bucket.id,
       due_date: this.dueData(data.due_date),
@@ -64,6 +64,10 @@ class BucketRequestController {
       observation: data.observation,
       protocol: this.protocolGenerate()
     })
+
+    // console.log(address)
+
+    await bucketRequest.address().createMany(address)
 
     return bucketRequest
   }
