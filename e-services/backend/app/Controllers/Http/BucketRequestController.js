@@ -4,6 +4,7 @@ const moment = require('moment')
 const BucketRequest = use('App/Models/BucketRequest')
 const Persona = use('App/Models/Persona')
 const Bucket = use('App/Models/Bucket')
+const Database = use('Database')
 
 class BucketRequestController {
   async index({ request }) {
@@ -31,18 +32,23 @@ class BucketRequestController {
       'observation'
     ])
 
-    const address = request.input('address')
+    const addresses = request.input('addresses')
+
+    const trx = await Database.beginTransaction()
 
     let persona = await Persona.findBy('document', data.document)
 
     if (!persona) {
-      persona = await Persona.create({
-        user_id: id,
-        name: data.persona,
-        document: data.document,
-        cellphone: data.cellphone,
-        email: data.email
-      })
+      persona = await Persona.create(
+        {
+          user_id: id,
+          name: data.persona,
+          document: data.document,
+          cellphone: data.cellphone,
+          email: data.email
+        },
+        trx
+      )
     }
 
     // const dueDate = moment()
@@ -54,20 +60,23 @@ class BucketRequestController {
       data.number_bucket
     )
 
-    const bucketRequest = BucketRequest.create({
-      user_id: id,
-      persona_id: persona.id,
-      trash_type: data.trash_type,
-      bucket_id: bucket.id,
-      due_date: this.dueData(data.due_date),
-      priority: data.priority,
-      observation: data.observation,
-      protocol: this.protocolGenerate()
-    })
+    const bucketRequest = await BucketRequest.create(
+      {
+        user_id: id,
+        persona_id: persona.id,
+        trash_type: data.trash_type,
+        bucket_id: bucket.id,
+        due_date: this.dueData(data.due_date),
+        priority: data.priority,
+        observation: data.observation,
+        protocol: this.protocolGenerate()
+      },
+      trx
+    )
 
-    // console.log(address)
+    await bucketRequest.addresses().createMany(addresses, trx)
 
-    await bucketRequest.address().createMany(address)
+    await trx.commit()
 
     return bucketRequest
   }
@@ -77,14 +86,15 @@ class BucketRequestController {
 
     await bucketRequest.load('user')
     await bucketRequest.load('persona')
+    await bucketRequest.load('addresses')
 
     return bucketRequest
   }
 
   async update({ params, request, auth }) {
     const bucketRequest = await BucketRequest.findOrFail(params.id)
+
     const data = request.only([
-      'address',
       'trash_type',
       // 'number_bucket',
       'due_date',
@@ -92,11 +102,12 @@ class BucketRequestController {
       'observation'
     ])
 
+    const addresses = request.input('addresses')
+
     // Pesquisa a caçamba pelo seu número
     // const bucket = await Bucket.findBy('number_bucket', data.number_bucket)
 
     bucketRequest.merge({
-      address: data.address,
       trash_type: data.trash_type,
       // bucket_id: bucket.id,
       due_date: this.dueData(data.due_date),
@@ -106,6 +117,11 @@ class BucketRequestController {
     })
 
     await bucketRequest.save()
+
+    if (addresses) {
+      await bucketRequest.addresses().sync(addresses)
+      await bucketRequest.load('addresses')
+    }
 
     return bucketRequest
   }

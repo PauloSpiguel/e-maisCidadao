@@ -3,15 +3,15 @@
 /** @type {import('@adonisjs/lucid/src/Schema')} */
 const Schema = use('Schema')
 
-class RequestAddressSchema extends Schema {
+class UserAddressSchema extends Schema {
   up() {
-    this.create('request_addresses', table => {
+    this.create('user_addresses', table => {
       table.increments()
       table
-        .integer('bucket_request_id')
+        .integer('user_id')
         .unsigned()
         .references('id')
-        .inTable('bucket_requests')
+        .inTable('users')
         .onUpdate('CASCADE')
         .onDelete('SET NULL')
       table.string('street').notNullable()
@@ -24,8 +24,8 @@ class RequestAddressSchema extends Schema {
   }
 
   down() {
-    this.drop('request_addresses')
+    this.drop('user_addresses')
   }
 }
 
-module.exports = RequestAddressSchema
+module.exports = UserAddressSchema
