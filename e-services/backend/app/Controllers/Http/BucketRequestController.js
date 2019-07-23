@@ -104,6 +104,8 @@ class BucketRequestController {
 
     const addresses = request.input('addresses')
 
+    const trx = await Database.beginTransaction()
+
     // Pesquisa a caçamba pelo seu número
     // const bucket = await Bucket.findBy('number_bucket', data.number_bucket)
 
@@ -116,12 +118,25 @@ class BucketRequestController {
       user_id: auth.user.id
     })
 
-    await bucketRequest.save()
+    await bucketRequest.save(trx)
 
     if (addresses) {
-      await bucketRequest.addresses().sync(addresses)
-      await bucketRequest.load('addresses')
+      // await bucketRequest.addresses().update(
+      //   {
+      //     street: addresses.street,
+      //     number: addresses.number,
+      //     district: addresses.district,
+      //     city: addresses.city,
+      //     state: addresses.state
+      //   },
+      //   trx
+      // )
+      await bucketRequest.addresses().update(addresses, trx)
     }
+
+    await trx.commit()
+
+    await bucketRequest.load('addresses')
 
     return bucketRequest
   }
