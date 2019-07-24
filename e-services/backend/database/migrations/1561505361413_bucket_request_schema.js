@@ -20,6 +20,13 @@ class BucketRequestSchema extends Schema {
         .inTable('personas')
         .onUpdate('CASCADE')
         .onDelete('SET NULL')
+      table
+        .integer('address_id')
+        .unsigned()
+        .references('id')
+        .inTable('addresses')
+        .onUpdate('CASCADE')
+        .onDelete('SET NULL')
       table.string('trash_type')
       table
         .integer('bucket_id')

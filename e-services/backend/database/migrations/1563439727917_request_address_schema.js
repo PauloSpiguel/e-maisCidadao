@@ -8,10 +8,10 @@ class RequestAddressSchema extends Schema {
     this.create('request_addresses', table => {
       table.increments()
       table
-        .integer('bucket_request_id')
+        .integer('user_id')
         .unsigned()
         .references('id')
-        .inTable('bucket_requests')
+        .inTable('user')
         .onUpdate('CASCADE')
         .onDelete('SET NULL')
       table.string('street').notNullable()

@@ -5,6 +5,7 @@ const BucketRequest = use('App/Models/BucketRequest')
 const Persona = use('App/Models/Persona')
 const Bucket = use('App/Models/Bucket')
 const Database = use('Database')
+const Address = use('App/Models/RequestAddress')
 
 class BucketRequestController {
   async index({ request }) {
@@ -13,6 +14,7 @@ class BucketRequestController {
     const bucketRequests = BucketRequest.query()
       .with('user')
       .with('persona')
+      .with('addresses')
       .paginate(page)
 
     return bucketRequests
@@ -60,12 +62,15 @@ class BucketRequestController {
       data.number_bucket
     )
 
+    const address = await Address.create({ ...addresses, user_id: id }, trx)
+
     const bucketRequest = await BucketRequest.create(
       {
         user_id: id,
         persona_id: persona.id,
-        trash_type: data.trash_type,
+        address_id: address.id,
         bucket_id: bucket.id,
+        trash_type: data.trash_type,
         due_date: this.dueData(data.due_date),
         priority: data.priority,
         observation: data.observation,
@@ -73,8 +78,6 @@ class BucketRequestController {
       },
       trx
     )
-
-    await bucketRequest.addresses().createMany(addresses, trx)
 
     await trx.commit()
 
@@ -87,6 +90,7 @@ class BucketRequestController {
     await bucketRequest.load('user')
     await bucketRequest.load('persona')
     await bucketRequest.load('addresses')
+    await bucketRequest.load('bucket')
 
     return bucketRequest
   }
@@ -120,19 +124,19 @@ class BucketRequestController {
 
     await bucketRequest.save(trx)
 
-    if (addresses) {
-      // await bucketRequest.addresses().update(
-      //   {
-      //     street: addresses.street,
-      //     number: addresses.number,
-      //     district: addresses.district,
-      //     city: addresses.city,
-      //     state: addresses.state
-      //   },
-      //   trx
-      // )
-      await bucketRequest.addresses().update(addresses, trx)
-    }
+    // if (addresses) {
+    await bucketRequest.addresses().update(
+      {
+        street: addresses.street,
+        number: addresses.number,
+        district: addresses.district,
+        city: addresses.city,
+        state: addresses.state
+      },
+      trx
+    )
+    // await bucketRequest.addresses().update(addresses, trx)
+    // }
 
     await trx.commit()
 
