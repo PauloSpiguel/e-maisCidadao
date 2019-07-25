@@ -24,7 +24,7 @@ class BucketRequestSchema extends Schema {
         .integer('address_id')
         .unsigned()
         .references('id')
-        .inTable('request_addresses')
+        .inTable('addresses')
         .onUpdate('CASCADE')
         .onDelete('SET NULL')
       table.string('trash_type')

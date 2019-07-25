@@ -1,10 +1,10 @@
 'use strict'
 
-const RequestAddress = use('App/Models/RequestAddress')
+const Address = use('App/Models/Address')
 
-class RequestAddressController {
+class AddressController {
   async index({ request }) {
-    const address = RequestAddress.query()
+    const address = Address.query()
       .with('user')
       .fetch()
 
@@ -15,13 +15,13 @@ class RequestAddressController {
     const { id } = auth.user
     const data = request.input('address')
 
-    const address = await RequestAddress.create({ ...data, user_id: id })
+    const address = await Address.create({ ...data, user_id: id })
 
     return address
   }
 
   async show({ params }) {
-    const address = await RequestAddress.findOrFail(params.id)
+    const address = await Address.findOrFail(params.id)
 
     await address.load('user')
 
@@ -31,7 +31,7 @@ class RequestAddressController {
   async update({ params, request, auth }) {
     const { id } = auth.user
 
-    const address = await RequestAddress.findOrFail(params.id)
+    const address = await Address.findOrFail(params.id)
     const data = request.input('address')
 
     address.merge({ ...data, user_id: id })
@@ -43,10 +43,10 @@ class RequestAddressController {
   }
 
   async destroy({ params }) {
-    const address = await RequestAddress.findOrFail(params.id)
+    const address = await Address.findOrFail(params.id)
 
     await address.delete()
   }
 }
 
-module.exports = RequestAddressController
+module.exports = AddressController

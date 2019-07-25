@@ -5,7 +5,7 @@ const Schema = use('Schema')
 
 class RequestAddressSchema extends Schema {
   up() {
-    this.create('request_addresses', table => {
+    this.create('addresses', table => {
       table.increments()
       table
         .integer('user_id')

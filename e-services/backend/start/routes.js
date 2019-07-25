@@ -28,6 +28,6 @@ Route.group(() => {
   Route.resource('personas', 'PersonaController')
     .apiOnly()
     .validator(new Map([[['personas.update'], ['Persona']]]))
-  Route.resource('addresses', 'RequestAddressController').apiOnly()
+  Route.resource('addresses', 'AddressController').apiOnly()
   Route.post('/files', 'fileController.store')
 }).middleware(['auth'])
