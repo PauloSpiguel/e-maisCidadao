@@ -9,7 +9,7 @@ class BucketRequest extends Model {
     this.addHook('afterCreate', 'BucketRequestHook.sendNewBucketRequestMail')
     this.addHook('beforeUpdate', 'BucketRequestHook.sendNewBucketRequestMail')
   }
-  addresses() {
+  address() {
     return this.belongsTo('App/Models/RequestAddress')
   }
   user() {

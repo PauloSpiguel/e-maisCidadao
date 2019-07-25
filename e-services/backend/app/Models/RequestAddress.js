@@ -5,10 +5,7 @@ const Model = use('Model')
 
 class RequestAddress extends Model {
   user() {
-    return this.hasMany('App/Models/User')
-  }
-  bucketRequest() {
-    return this.hasMany('App/Models/BucketRequest')
+    return this.belongsTo('App/Models/User')
   }
 }
 

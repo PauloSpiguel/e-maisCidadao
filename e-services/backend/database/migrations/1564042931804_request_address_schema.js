@@ -11,7 +11,7 @@ class RequestAddressSchema extends Schema {
         .integer('user_id')
         .unsigned()
         .references('id')
-        .inTable('user')
+        .inTable('users')
         .onUpdate('CASCADE')
         .onDelete('SET NULL')
       table.string('street').notNullable()
@@ -19,6 +19,7 @@ class RequestAddressSchema extends Schema {
       table.string('district').notNullable()
       table.string('city').notNullable()
       table.string('state').notNullable()
+      table.string('complement')
       table.timestamps()
     })
   }

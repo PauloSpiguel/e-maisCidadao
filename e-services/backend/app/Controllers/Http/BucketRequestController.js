@@ -5,7 +5,7 @@ const BucketRequest = use('App/Models/BucketRequest')
 const Persona = use('App/Models/Persona')
 const Bucket = use('App/Models/Bucket')
 const Database = use('Database')
-const Address = use('App/Models/RequestAddress')
+// const Address = use('App/Models/RequestAddress')
 
 class BucketRequestController {
   async index({ request }) {
@@ -14,13 +14,13 @@ class BucketRequestController {
     const bucketRequests = BucketRequest.query()
       .with('user')
       .with('persona')
-      .with('addresses')
+      .with('address')
       .paginate(page)
 
     return bucketRequests
   }
 
-  async store({ request, response, auth }) {
+  async store({ request, auth }) {
     const { id } = auth.user
     const data = request.only([
       'persona',
@@ -34,7 +34,7 @@ class BucketRequestController {
       'observation'
     ])
 
-    const addresses = request.input('addresses')
+    const address = request.input('address')
 
     const trx = await Database.beginTransaction()
 
@@ -62,13 +62,13 @@ class BucketRequestController {
       data.number_bucket
     )
 
-    const address = await Address.create({ ...addresses, user_id: id }, trx)
+    // const address = await Address.create({ ...addresses, user_id: id }, trx)
 
     const bucketRequest = await BucketRequest.create(
       {
         user_id: id,
         persona_id: persona.id,
-        address_id: address.id,
+        address_id: address,
         bucket_id: bucket.id,
         trash_type: data.trash_type,
         due_date: this.dueData(data.due_date),
@@ -89,8 +89,8 @@ class BucketRequestController {
 
     await bucketRequest.load('user')
     await bucketRequest.load('persona')
-    await bucketRequest.load('addresses')
     await bucketRequest.load('bucket')
+    await bucketRequest.load('address')
 
     return bucketRequest
   }
