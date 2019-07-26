@@ -5,7 +5,7 @@ const BucketRequest = use('App/Models/BucketRequest')
 const Persona = use('App/Models/Persona')
 const Bucket = use('App/Models/Bucket')
 const Database = use('Database')
-// const Address = use('App/Models/RequestAddress')
+const Address = use('App/Models/Address')
 
 class BucketRequestController {
   async index({ request }) {
@@ -62,13 +62,19 @@ class BucketRequestController {
       data.number_bucket
     )
 
-    // const address = await Address.create({ ...addresses, user_id: id }, trx)
+    const addressUpdate = await Address.findOrCreate(
+      { ...address },
+      { ...address },
+      trx
+    )
+
+    console.log(addressUpdate)
 
     const bucketRequest = await BucketRequest.create(
       {
         user_id: id,
         persona_id: persona.id,
-        address_id: address,
+        address_id: addressUpdate.id,
         bucket_id: bucket.id,
         trash_type: data.trash_type,
         due_date: this.dueData(data.due_date),
@@ -106,7 +112,7 @@ class BucketRequestController {
       'observation'
     ])
 
-    const addresses = request.input('addresses')
+    const address = request.input('address')
 
     const trx = await Database.beginTransaction()
 
@@ -125,7 +131,7 @@ class BucketRequestController {
     await bucketRequest.save(trx)
 
     // if (addresses) {
-    await bucketRequest.addresses().update(
+    await bucketRequest.address().update(
       {
         street: addresses.street,
         number: addresses.number,
