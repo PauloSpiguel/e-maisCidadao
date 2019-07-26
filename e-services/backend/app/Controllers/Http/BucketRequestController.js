@@ -38,37 +38,29 @@ class BucketRequestController {
 
     const trx = await Database.beginTransaction()
 
-    let persona = await Persona.findBy('document', data.document)
-
-    if (!persona) {
-      persona = await Persona.create(
-        {
-          user_id: id,
-          name: data.persona,
-          document: data.document,
-          cellphone: data.cellphone,
-          email: data.email
-        },
-        trx
-      )
-    }
-
-    // const dueDate = moment()
-    //   .add(data.due_date, 'days')
-    //   .format('YYYY-MM-DD HH:mm:ss')
+    // CREATE PERSON CASE NOT EXIST
+    const persona = await Persona.findOrCreate(
+      { document: data.document },
+      {
+        user_id: id,
+        name: data.persona,
+        document: data.document,
+        cellphone: data.cellphone,
+        email: data.email
+      }
+    )
 
     const bucket = await Bucket.findByOrFail(
       'number_bucket',
       data.number_bucket
     )
 
+    // CREATE ADDRESS CASE NOT EXIST
     const addressUpdate = await Address.findOrCreate(
       { ...address },
       { ...address, user_id: id },
       trx
     )
-
-    console.log(addressUpdate)
 
     const bucketRequest = await BucketRequest.create(
       {
@@ -102,51 +94,54 @@ class BucketRequestController {
   }
 
   async update({ params, request, auth }) {
+    const { id } = auth.user
     const bucketRequest = await BucketRequest.findOrFail(params.id)
 
     const data = request.only([
       'trash_type',
-      // 'number_bucket',
       'due_date',
       'priority',
       'observation'
     ])
 
+    const person = request.input('persona')
+
     const address = request.input('address')
 
     const trx = await Database.beginTransaction()
 
-    // Pesquisa a caçamba pelo seu número
-    // const bucket = await Bucket.findBy('number_bucket', data.number_bucket)
+    const persona = await Persona.findOrCreate(
+      { document: person.document },
+      {
+        user_id: id,
+        name: person.name,
+        document: person.document,
+        cellphone: person.cellphone,
+        email: person.email
+      }
+    )
+
+    const addressUpdateOrCreate = await Address.findOrCreate(
+      { ...address },
+      { ...address, user_id: id },
+      trx
+    )
 
     bucketRequest.merge({
+      user_id: id,
+      persona_id: persona.id,
+      address_id: addressUpdateOrCreate.id,
       trash_type: data.trash_type,
-      // bucket_id: bucket.id,
       due_date: this.dueData(data.due_date),
       priority: data.priority,
-      observation: data.observation,
-      user_id: auth.user.id
+      observation: data.observation
     })
 
     await bucketRequest.save(trx)
 
-    // if (addresses) {
-    await bucketRequest.address().update(
-      {
-        street: addresses.street,
-        number: addresses.number,
-        district: addresses.district,
-        city: addresses.city,
-        state: addresses.state
-      },
-      trx
-    )
-    // await bucketRequest.addresses().update(addresses, trx)
-    // }
-
     await trx.commit()
 
-    await bucketRequest.load('addresses')
+    await bucketRequest.load('address')
 
     return bucketRequest
   }
