@@ -64,7 +64,7 @@ class BucketRequestController {
 
     const addressUpdate = await Address.findOrCreate(
       { ...address },
-      { ...address },
+      { ...address, user_id: id },
       trx
     )
 
