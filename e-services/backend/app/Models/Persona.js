@@ -6,7 +6,8 @@ class Persona extends Model {
   // static boot() {
   //   super.boot()
 
-  //   this.addHook('', 'PersonaHook.personaCreateOrUpdate')
+  //   // this.addHook('beforeUpdate', 'PersonaHook.personaCreateOrUpdate')
+  //   this.addHook('beforeSave', 'PersonaHook.personaCreateOrUpdate')
   // }
 
   user() {

@@ -66,6 +66,6 @@ BucketRequestHook.sendNewBucketRequestMail = async bucketRequestInstance => {
   }
 }
 
-BucketRequestHook.personaCreateOrUpdate = async personaInstance => {
-  console.log(personaInstance.dirty)
-}
+// BucketRequestHook.personaCreateOrUpdate = async personaInstance => {
+//   console.log(personaInstance.dirty)
+// }

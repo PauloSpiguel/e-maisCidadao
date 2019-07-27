@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 'use strict'
 const moment = require('moment')
 
@@ -9,9 +10,13 @@ const Address = use('App/Models/Address')
 
 class BucketRequestController {
   async index({ request }) {
-    const { page } = request.get()
+    const { page, done_request } = request.get()
+
+    // undefined = 0
+    var doneRequest = done => (typeof done === 'undefined' ? 0 : done)
 
     const bucketRequests = BucketRequest.query()
+      .where('done_request', '>=', doneRequest(done_request))
       .with('user')
       .with('persona')
       .with('address')
@@ -23,8 +28,8 @@ class BucketRequestController {
   async store({ request, auth }) {
     const { id } = auth.user
     const data = request.only([
-      'persona',
       'document',
+      'persona',
       'cellphone',
       'email',
       'trash_type',
@@ -56,7 +61,7 @@ class BucketRequestController {
     )
 
     // CREATE ADDRESS CASE NOT EXIST
-    const addressUpdate = await Address.findOrCreate(
+    const addressFindOrCreate = await Address.findOrCreate(
       { ...address },
       { ...address, user_id: id },
       trx
@@ -66,7 +71,7 @@ class BucketRequestController {
       {
         user_id: id,
         persona_id: persona.id,
-        address_id: addressUpdate.id,
+        address_id: addressFindOrCreate.id,
         bucket_id: bucket.id,
         trash_type: data.trash_type,
         due_date: this.dueData(data.due_date),
@@ -99,29 +104,16 @@ class BucketRequestController {
 
     const data = request.only([
       'trash_type',
-      'due_date',
+      // 'due_date',
       'priority',
       'observation'
     ])
-
-    const person = request.input('persona')
 
     const address = request.input('address')
 
     const trx = await Database.beginTransaction()
 
-    const persona = await Persona.findOrCreate(
-      { document: person.document },
-      {
-        user_id: id,
-        name: person.name,
-        document: person.document,
-        cellphone: person.cellphone,
-        email: person.email
-      }
-    )
-
-    const addressUpdateOrCreate = await Address.findOrCreate(
+    const addressFindOrCreate = await Address.findOrCreate(
       { ...address },
       { ...address, user_id: id },
       trx
@@ -129,10 +121,9 @@ class BucketRequestController {
 
     bucketRequest.merge({
       user_id: id,
-      persona_id: persona.id,
-      address_id: addressUpdateOrCreate.id,
+      address_id: addressFindOrCreate.id,
       trash_type: data.trash_type,
-      due_date: this.dueData(data.due_date),
+      // due_date: this.dueData(data.due_date),
       priority: data.priority,
       observation: data.observation
     })
