@@ -28,8 +28,6 @@ class BucketRequestController {
   async store({ request, auth }) {
     const { id } = auth.user
 
-    const { document, name, cellphone, email } = request.input('persona')
-
     const data = request.only([
       'trash_type',
       'number_bucket',
@@ -38,20 +36,20 @@ class BucketRequestController {
       'observation'
     ])
 
+    const person = request.input('persona')
+
     const address = request.input('address')
 
     const trx = await Database.beginTransaction()
 
     // CREATE PERSON CASE NOT EXIST
     const persona = await Persona.findOrCreate(
-      { document },
+      { document: person.document },
       {
-        user_id: id,
-        name,
-        document,
-        cellphone,
-        email
-      }
+        ...person,
+        user_id: id
+      },
+      trx
     )
 
     const bucket = await Bucket.findByOrFail(

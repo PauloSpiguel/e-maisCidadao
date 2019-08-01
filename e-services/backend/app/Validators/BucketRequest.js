@@ -8,9 +8,7 @@ class BucketRequest {
   }
   get rules() {
     return {
-      persona: 'required',
-      document: 'required',
-      cellphone: 'required'
+      trash_type: 'required'
     }
   }
   get messages() {
