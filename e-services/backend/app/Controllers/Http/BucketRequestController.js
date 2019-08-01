@@ -27,11 +27,10 @@ class BucketRequestController {
 
   async store({ request, auth }) {
     const { id } = auth.user
+
+    const { document, name, cellphone, email } = request.input('persona')
+
     const data = request.only([
-      'document',
-      'persona',
-      'cellphone',
-      'email',
       'trash_type',
       'number_bucket',
       'due_date',
@@ -45,13 +44,13 @@ class BucketRequestController {
 
     // CREATE PERSON CASE NOT EXIST
     const persona = await Persona.findOrCreate(
-      { document: data.document },
+      { document },
       {
         user_id: id,
-        name: data.persona,
-        document: data.document,
-        cellphone: data.cellphone,
-        email: data.email
+        name,
+        document,
+        cellphone,
+        email
       }
     )
 
