@@ -2,7 +2,7 @@
 
 const Route = use('Route')
 
-Route.get('/', () => 'Você acessou o e-MaisCidadão')
+Route.get('/', () => 'Você acessou o e-MaisCidadão!!!!')
 
 Route.post('users', 'UserController.store').validator('User')
 Route.post('sessions', 'SessionController.store').validator('Session')
