@@ -2,6 +2,8 @@
 
 const Route = use('Route')
 
+Route.get('/teste', () => 'Você acessou o e-MaisCidadão')
+
 Route.post('users', 'UserController.store').validator('User')
 Route.post('sessions', 'SessionController.store').validator('Session')
 Route.post('forgot-password', 'ForgotPasswordController.store').validator(
